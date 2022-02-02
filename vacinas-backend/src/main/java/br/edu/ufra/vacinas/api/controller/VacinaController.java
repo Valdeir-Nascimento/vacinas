@@ -44,7 +44,7 @@ public class VacinaController {
     @GetMapping
     public ResponseEntity<List<VacinaDTO>> findAll(@PathVariable Integer idAnimal) {
         Animal animalAtual = animalService.findById(idAnimal);
-        List<Vacina> vacinaList = vacinaService.obterVacinasPorAnimal(animalAtual);
+        List<Vacina> vacinaList = vacinaService.obter(animalAtual);
         return ResponseEntity.ok().body(vacinaDTOConverter.to(vacinaList));
     }
 

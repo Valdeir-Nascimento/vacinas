@@ -7,4 +7,8 @@ public class AnimalNaoEncontradoException extends EntidadeNaoEncontradaException
 	public AnimalNaoEncontradoException(String message) {
 		super(message);
 	}
+
+	public AnimalNaoEncontradoException(Integer idAnimal) {
+		this(String.format("Não existe cadastro de animal com ID: %d", idAnimal));
+	}
 }

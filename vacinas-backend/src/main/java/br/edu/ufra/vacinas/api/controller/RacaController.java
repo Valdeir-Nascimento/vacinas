@@ -41,7 +41,7 @@ public class RacaController {
 
     @GetMapping
     public ResponseEntity<List<RacaDTO>> findAll() {
-        List<Raca> racaList = racaService.findAll();
+        List<Raca> racaList = racaService.listar();
         return ResponseEntity.ok().body(racaDTOConverter.to(racaList));
     }
 

@@ -41,7 +41,7 @@ public class AnimalController {
 
     @GetMapping
     public ResponseEntity<List<AnimalDTO>> findAll() {
-        List<Animal> animalList = animalService.obterAnimais();
+        List<Animal> animalList = animalService.listar();
         return ResponseEntity.ok().body(animalDTOConverter.to(animalList));
     }
 

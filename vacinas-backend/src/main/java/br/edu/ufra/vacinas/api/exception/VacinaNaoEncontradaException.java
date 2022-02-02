@@ -7,4 +7,8 @@ public class VacinaNaoEncontradaException extends EntidadeNaoEncontradaException
 	public VacinaNaoEncontradaException(String message) {
 		super(message);
 	}
+
+	public VacinaNaoEncontradaException(Integer idVacina) {
+		this(String.format("Não existe cadastro de vacina com ID: %d", idVacina));
+	}
 }
