@@ -26,7 +26,7 @@ public class AnimalService {
         return animalRepository.findAll();
     }
 
-    public Animal findById(Integer idAnimal) {
+    public Animal buscar(Integer idAnimal) {
         return animalRepository
                 .findById(idAnimal)
                 .orElseThrow(() -> new AnimalNaoEncontradoException(idAnimal));

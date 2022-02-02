@@ -21,8 +21,7 @@ public class RacaService {
         return racaRepository.findAll();
     }
 
-    public Raca findById(Integer idRaca) {
-
+    public Raca buscar(Integer idRaca) {
         return racaRepository
                 .findById(idRaca)
                 .orElseThrow(() -> new RacaNaoEncontradaException(idRaca));

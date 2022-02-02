@@ -1,29 +1,17 @@
 package br.edu.ufra.vacinas.api.controller;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
 import br.edu.ufra.vacinas.api.dto.RacaDTO;
-import br.edu.ufra.vacinas.api.dto.converter.RacaDTOConverter;
-import br.edu.ufra.vacinas.api.dto.converter.RacaRequestConverter;
+import br.edu.ufra.vacinas.api.dto.converter.RacaConverter;
 import br.edu.ufra.vacinas.api.dto.request.RacaRequest;
 import br.edu.ufra.vacinas.api.model.Raca;
 import br.edu.ufra.vacinas.api.service.RacaService;
+import br.edu.ufra.vacinas.api.util.ResourceUriUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -33,42 +21,38 @@ public class RacaController {
     @Autowired
     private RacaService racaService;
     @Autowired
-    private RacaDTOConverter racaDTOConverter;
-    @Autowired
-    private RacaRequestConverter racaRequestConverter;
-    @Autowired
-    private ApplicationEventPublisher publisher;
+    private RacaConverter racaConverter;
 
     @GetMapping
-    public ResponseEntity<List<RacaDTO>> findAll() {
+    public ResponseEntity<List<RacaDTO>> listar() {
         List<Raca> racaList = racaService.listar();
-        return ResponseEntity.ok().body(racaDTOConverter.to(racaList));
+        return ResponseEntity.ok().body(racaConverter.to(racaList));
     }
 
     @GetMapping("/{idRaca}")
-    public ResponseEntity<RacaDTO> findById(@PathVariable Integer idRaca) {
-        Raca racaAtual = racaService.findById(idRaca);
-        return ResponseEntity.ok().body(racaDTOConverter.to(racaAtual));
+    public ResponseEntity<RacaDTO> buscar(@PathVariable Integer idRaca) {
+        Raca racaAtual = racaService.buscar(idRaca);
+        return ResponseEntity.ok().body(racaConverter.to(racaAtual));
     }
 
     @PostMapping
-    public ResponseEntity<RacaDTO> criar(@RequestBody RacaRequest racaRequest, HttpServletResponse response) {
-        Raca raca = racaRequestConverter.to(racaRequest);
+    public ResponseEntity<RacaDTO> salvar(@RequestBody RacaRequest racaRequest) {
+        Raca raca = racaConverter.to(racaRequest);
         raca = racaService.salvar(raca);
-        
-        return ResponseEntity.status(HttpStatus.CREATED).body(racaDTOConverter.to(raca));
+        ResourceUriUtil.addUriInResponseHeader(raca.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(racaConverter.to(raca));
     }
 
     @PutMapping("/{idRaca}")
     public ResponseEntity<RacaDTO> atualizar(@PathVariable Integer idRaca, @RequestBody RacaRequest racaRequest) {
-        Raca racaAtual = racaService.findById(idRaca);
-        racaRequestConverter.copyToProperties(racaRequest, racaAtual);
+        Raca racaAtual = racaService.buscar(idRaca);
+        racaConverter.copyToProperties(racaRequest, racaAtual);
         racaAtual = racaService.salvar(racaAtual);
-        return ResponseEntity.ok().body(racaDTOConverter.to(racaAtual));
+        return ResponseEntity.ok().body(racaConverter.to(racaAtual));
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{idRaca}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void excluir(@PathVariable Integer idRaca) {
         racaService.excluir(idRaca);
     }

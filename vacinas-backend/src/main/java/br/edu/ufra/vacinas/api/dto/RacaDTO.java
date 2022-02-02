@@ -8,5 +8,4 @@ import lombok.Setter;
 public class RacaDTO {
     private Integer id;
     private String nome;
-
 }

@@ -8,7 +8,6 @@ import java.util.Date;
 @Setter
 @Getter
 public class AnimalRequest {
-    //private Integer id;
     private String nome;
     private String dono;
     private String telefone;

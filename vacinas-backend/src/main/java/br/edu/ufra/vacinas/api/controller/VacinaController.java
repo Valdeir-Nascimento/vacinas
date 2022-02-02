@@ -2,10 +2,9 @@ package br.edu.ufra.vacinas.api.controller;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-
+import br.edu.ufra.vacinas.api.dto.converter.VacinaConverter;
+import br.edu.ufra.vacinas.api.util.ResourceUriUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.edu.ufra.vacinas.api.dto.VacinaDTO;
-import br.edu.ufra.vacinas.api.dto.converter.VacinaDTOConverter;
-import br.edu.ufra.vacinas.api.dto.converter.VacinaRequestConverter;
 import br.edu.ufra.vacinas.api.dto.request.VacinaRequest;
 import br.edu.ufra.vacinas.api.model.Animal;
 import br.edu.ufra.vacinas.api.model.Vacina;
@@ -35,45 +32,35 @@ public class VacinaController {
     @Autowired
     private AnimalService animalService;
     @Autowired
-    private VacinaDTOConverter vacinaDTOConverter;
-    @Autowired
-    private VacinaRequestConverter vacinaRequestConverter;
-    @Autowired
-    private ApplicationEventPublisher publisher;
+    private VacinaConverter vacinaConverter;
 
     @GetMapping
-    public ResponseEntity<List<VacinaDTO>> findAll(@PathVariable Integer idAnimal) {
-        Animal animalAtual = animalService.findById(idAnimal);
+    public ResponseEntity<List<VacinaDTO>> listar(@PathVariable Integer idAnimal) {
+        Animal animalAtual = animalService.buscar(idAnimal);
         List<Vacina> vacinaList = vacinaService.obter(animalAtual);
-        return ResponseEntity.ok().body(vacinaDTOConverter.to(vacinaList));
+        return ResponseEntity.ok().body(vacinaConverter.to(vacinaList));
     }
 
     @GetMapping("/{idVacina}")
-    public ResponseEntity<VacinaDTO> findById(@PathVariable Integer idAnimal, @PathVariable Integer idVacina) {
-        Vacina vacinaAtual = vacinaService.findById(idVacina);
-        return ResponseEntity.ok().body(vacinaDTOConverter.to(vacinaAtual));
+    public ResponseEntity<VacinaDTO> buscar(@PathVariable Integer idAnimal, @PathVariable Integer idVacina) {
+        Vacina vacinaAtual = vacinaService.buscar(idVacina);
+        return ResponseEntity.ok().body(vacinaConverter.to(vacinaAtual));
     }
 
     @PostMapping
-    public ResponseEntity<VacinaDTO> criar(
-            @PathVariable Integer idAnimal,
-            @RequestBody VacinaRequest vacinaRequest,
-            HttpServletResponse response
-    ) {
-        Vacina vacina = vacinaRequestConverter.to(vacinaRequest);
+    public ResponseEntity<VacinaDTO> salvar(@PathVariable Integer idAnimal, @RequestBody VacinaRequest vacinaRequest) {
+        Vacina vacina = vacinaConverter.to(vacinaRequest);
         vacina = vacinaService.salvar(vacina);
-        return ResponseEntity.status(HttpStatus.CREATED).body(vacinaDTOConverter.to(vacina));
+        ResourceUriUtil.addUriInResponseHeader(vacina.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(vacinaConverter.to(vacina));
     }
 
     @PutMapping("/{idVacina}")
-    public ResponseEntity<VacinaDTO> atualizar(
-            @PathVariable Integer idAnimal,
-            @PathVariable Integer idVacina,
-            @RequestBody VacinaRequest vacinaRequest) {
-        Vacina vacinaAtual = vacinaService.findById(idVacina);
-        vacinaRequestConverter.copyToProperties(vacinaRequest, vacinaAtual);
+    public ResponseEntity<VacinaDTO> atualizar(@PathVariable Integer idAnimal, @PathVariable Integer idVacina, @RequestBody VacinaRequest vacinaRequest) {
+        Vacina vacinaAtual = vacinaService.buscar(idVacina);
+        vacinaConverter.copyToProperties(vacinaRequest, vacinaAtual);
         vacinaAtual = vacinaService.salvar(vacinaAtual);
-        return ResponseEntity.ok().body(vacinaDTOConverter.to(vacinaAtual));
+        return ResponseEntity.ok().body(vacinaConverter.to(vacinaAtual));
     }
 
     @DeleteMapping("/{idVacina}")

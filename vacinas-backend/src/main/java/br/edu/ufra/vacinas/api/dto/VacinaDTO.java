@@ -8,7 +8,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class VacinaDTO {
-
     private Integer id;
     private String nome;
     private Date data;

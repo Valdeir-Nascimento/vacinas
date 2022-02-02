@@ -23,8 +23,7 @@ public class VacinaService {
         return vacinaRepository.obterVacinasPorAnimal(animal);
     }
 
-    public Vacina findById(Integer idVacina) {
-
+    public Vacina buscar(Integer idVacina) {
         return vacinaRepository
                 .findById(idVacina)
                 .orElseThrow(() -> new VacinaNaoEncontradaException(idVacina));

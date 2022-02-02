@@ -1,74 +1,60 @@
 package br.edu.ufra.vacinas.api.controller;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
 import br.edu.ufra.vacinas.api.dto.AnimalDTO;
-import br.edu.ufra.vacinas.api.dto.converter.AnimalDTOConverter;
-import br.edu.ufra.vacinas.api.dto.converter.AnimalRequestConverter;
+import br.edu.ufra.vacinas.api.dto.converter.AnimalConverter;
 import br.edu.ufra.vacinas.api.dto.request.AnimalRequest;
 import br.edu.ufra.vacinas.api.model.Animal;
 import br.edu.ufra.vacinas.api.service.AnimalService;
+import br.edu.ufra.vacinas.api.util.ResourceUriUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 
 @RestController
-@RequestMapping(value ="/animais")
+@RequestMapping(value = "/animais")
 public class AnimalController {
 
     @Autowired
     private AnimalService animalService;
     @Autowired
-    private AnimalDTOConverter animalDTOConverter;
-    @Autowired
-    private AnimalRequestConverter animalRequestConverter;
-    @Autowired
-    private ApplicationEventPublisher publisher;
+    private AnimalConverter animalConverter;
+
 
     @GetMapping
-    public ResponseEntity<List<AnimalDTO>> findAll() {
-        List<Animal> animalList = animalService.listar();
-        return ResponseEntity.ok().body(animalDTOConverter.to(animalList));
+    public ResponseEntity<List<AnimalDTO>> listar() {
+            List<Animal> animalList = animalService.listar();
+        return ResponseEntity.ok().body(animalConverter.to(animalList));
     }
 
     @PostMapping
-    public ResponseEntity<AnimalDTO> salvar(@RequestBody AnimalRequest animalRequest, HttpServletResponse response){
-        Animal animal = animalRequestConverter.to(animalRequest);
+    public ResponseEntity<AnimalDTO> salvar(@RequestBody AnimalRequest animalRequest, HttpServletResponse response) {
+        Animal animal = animalConverter.to(animalRequest);
         animal = animalService.salvar(animal);
-       
-        return ResponseEntity.status(HttpStatus.CREATED).body(animalDTOConverter.to(animal));
+        ResourceUriUtil.addUriInResponseHeader(animal.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(animalConverter.to(animal));
     }
 
     @GetMapping("/{idAnimal}")
-    public ResponseEntity<AnimalDTO> findById(@PathVariable Integer idAnimal) {
-        Animal animal = animalService.findById(idAnimal);
-        return ResponseEntity.ok().body(animalDTOConverter.to(animal));
+    public ResponseEntity<AnimalDTO> buscar(@PathVariable Integer idAnimal) {
+        Animal animal = animalService.buscar(idAnimal);
+        return ResponseEntity.ok().body(animalConverter.to(animal));
     }
 
     @PutMapping("/{idAnimal}")
     public ResponseEntity<AnimalDTO> atualizar(@PathVariable Integer idAnimal, @RequestBody AnimalRequest animalRequest) {
-        Animal animalAtual = animalService.findById(idAnimal);
-        animalRequestConverter.copyToProperties(animalRequest, animalAtual);
+        Animal animalAtual = animalService.buscar(idAnimal);
+        animalConverter.copyToProperties(animalRequest, animalAtual);
         animalAtual = animalService.salvar(animalAtual);
-        return ResponseEntity.ok().body(animalDTOConverter.to(animalAtual));
+        return ResponseEntity.ok().body(animalConverter.to(animalAtual));
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{idAnimal}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void excluir(@PathVariable Integer idAnimal) {
         animalService.excluir(idAnimal);
     }
