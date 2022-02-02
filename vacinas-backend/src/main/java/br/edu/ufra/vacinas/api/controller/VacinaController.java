@@ -1,32 +1,24 @@
 package br.edu.ufra.vacinas.api.controller;
 
-import java.util.List;
-
+import br.edu.ufra.vacinas.api.dto.VacinaDTO;
 import br.edu.ufra.vacinas.api.dto.converter.VacinaConverter;
+import br.edu.ufra.vacinas.api.dto.request.VacinaRequest;
+import br.edu.ufra.vacinas.api.model.Vacina;
+import br.edu.ufra.vacinas.api.service.AnimalService;
+import br.edu.ufra.vacinas.api.service.VacinaService;
 import br.edu.ufra.vacinas.api.util.ResourceUriUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import br.edu.ufra.vacinas.api.dto.VacinaDTO;
-import br.edu.ufra.vacinas.api.dto.request.VacinaRequest;
-import br.edu.ufra.vacinas.api.model.Animal;
-import br.edu.ufra.vacinas.api.model.Vacina;
-import br.edu.ufra.vacinas.api.service.AnimalService;
-import br.edu.ufra.vacinas.api.service.VacinaService;
+import java.util.List;
 
 
 @RestController
 @RequestMapping(value = "/animais/{idAnimal}/vacinas")
 public class VacinaController {
+
     @Autowired
     private VacinaService vacinaService;
     @Autowired
@@ -36,14 +28,13 @@ public class VacinaController {
 
     @GetMapping
     public ResponseEntity<List<VacinaDTO>> listar(@PathVariable Integer idAnimal) {
-        Animal animalAtual = animalService.buscar(idAnimal);
-        List<Vacina> vacinaList = vacinaService.obter(animalAtual);
-        return ResponseEntity.ok().body(vacinaConverter.to(vacinaList));
+        List<Vacina> vacinas = vacinaService.obter(animalService.buscar(idAnimal));
+        return ResponseEntity.ok().body(vacinaConverter.to(vacinas));
     }
 
     @GetMapping("/{idVacina}")
     public ResponseEntity<VacinaDTO> buscar(@PathVariable Integer idAnimal, @PathVariable Integer idVacina) {
-        Vacina vacinaAtual = vacinaService.buscar(idVacina);
+        Vacina vacinaAtual = vacinaService.buscar(idAnimal, idVacina);
         return ResponseEntity.ok().body(vacinaConverter.to(vacinaAtual));
     }
 
@@ -57,13 +48,14 @@ public class VacinaController {
 
     @PutMapping("/{idVacina}")
     public ResponseEntity<VacinaDTO> atualizar(@PathVariable Integer idAnimal, @PathVariable Integer idVacina, @RequestBody VacinaRequest vacinaRequest) {
-        Vacina vacinaAtual = vacinaService.buscar(idVacina);
+        Vacina vacinaAtual = vacinaService.buscar(idAnimal, idVacina);
         vacinaConverter.copyToProperties(vacinaRequest, vacinaAtual);
         vacinaAtual = vacinaService.salvar(vacinaAtual);
         return ResponseEntity.ok().body(vacinaConverter.to(vacinaAtual));
     }
 
     @DeleteMapping("/{idVacina}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void excluir(@PathVariable Integer idAnimal, @PathVariable Integer idVacina) {
         vacinaService.excluir(idVacina);
     }

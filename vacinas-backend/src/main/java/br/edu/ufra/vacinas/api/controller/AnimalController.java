@@ -24,19 +24,9 @@ public class AnimalController {
     @Autowired
     private AnimalConverter animalConverter;
 
-
     @GetMapping
     public ResponseEntity<List<AnimalDTO>> listar() {
-            List<Animal> animalList = animalService.listar();
-        return ResponseEntity.ok().body(animalConverter.to(animalList));
-    }
-
-    @PostMapping
-    public ResponseEntity<AnimalDTO> salvar(@RequestBody AnimalRequest animalRequest, HttpServletResponse response) {
-        Animal animal = animalConverter.to(animalRequest);
-        animal = animalService.salvar(animal);
-        ResourceUriUtil.addUriInResponseHeader(animal.getId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(animalConverter.to(animal));
+        return ResponseEntity.ok().body(animalConverter.to(animalService.listar()));
     }
 
     @GetMapping("/{idAnimal}")
@@ -44,6 +34,15 @@ public class AnimalController {
         Animal animal = animalService.buscar(idAnimal);
         return ResponseEntity.ok().body(animalConverter.to(animal));
     }
+
+    @PostMapping
+    public ResponseEntity<AnimalDTO> salvar(@RequestBody AnimalRequest animalRequest) {
+        Animal animal = animalConverter.to(animalRequest);
+        animal = animalService.salvar(animal);
+        ResourceUriUtil.addUriInResponseHeader(animal.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(animalConverter.to(animal));
+    }
+
 
     @PutMapping("/{idAnimal}")
     public ResponseEntity<AnimalDTO> atualizar(@PathVariable Integer idAnimal, @RequestBody AnimalRequest animalRequest) {

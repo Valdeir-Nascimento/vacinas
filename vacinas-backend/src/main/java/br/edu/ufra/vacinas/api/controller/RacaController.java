@@ -15,7 +15,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping(value ="/racas")
+@RequestMapping(value = "/racas")
 public class RacaController {
 
     @Autowired
@@ -25,14 +25,13 @@ public class RacaController {
 
     @GetMapping
     public ResponseEntity<List<RacaDTO>> listar() {
-        List<Raca> racaList = racaService.listar();
-        return ResponseEntity.ok().body(racaConverter.to(racaList));
+        return ResponseEntity.ok().body(racaConverter.to(racaService.listar()));
     }
 
     @GetMapping("/{idRaca}")
     public ResponseEntity<RacaDTO> buscar(@PathVariable Integer idRaca) {
-        Raca racaAtual = racaService.buscar(idRaca);
-        return ResponseEntity.ok().body(racaConverter.to(racaAtual));
+        Raca raca = racaService.buscar(idRaca);
+        return ResponseEntity.ok().body(racaConverter.to(raca));
     }
 
     @PostMapping
