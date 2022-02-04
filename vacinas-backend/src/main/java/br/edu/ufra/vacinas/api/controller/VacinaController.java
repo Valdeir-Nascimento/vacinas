@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -39,7 +40,7 @@ public class VacinaController {
     }
 
     @PostMapping
-    public ResponseEntity<VacinaDTO> salvar(@PathVariable Integer idAnimal, @RequestBody VacinaRequest vacinaRequest) {
+    public ResponseEntity<VacinaDTO> salvar(@PathVariable Integer idAnimal, @Valid @RequestBody VacinaRequest vacinaRequest) {
         Vacina vacina = vacinaConverter.to(vacinaRequest);
         vacina = vacinaService.salvar(vacina);
         ResourceUriUtil.addUriInResponseHeader(vacina.getId());
@@ -47,7 +48,7 @@ public class VacinaController {
     }
 
     @PutMapping("/{idVacina}")
-    public ResponseEntity<VacinaDTO> atualizar(@PathVariable Integer idAnimal, @PathVariable Integer idVacina, @RequestBody VacinaRequest vacinaRequest) {
+    public ResponseEntity<VacinaDTO> atualizar(@PathVariable Integer idAnimal, @PathVariable Integer idVacina, @Valid @RequestBody VacinaRequest vacinaRequest) {
         Vacina vacinaAtual = vacinaService.buscar(idAnimal, idVacina);
         vacinaConverter.copyToProperties(vacinaRequest, vacinaAtual);
         vacinaAtual = vacinaService.salvar(vacinaAtual);

@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -35,7 +36,7 @@ public class RacaController {
     }
 
     @PostMapping
-    public ResponseEntity<RacaDTO> salvar(@RequestBody RacaRequest racaRequest) {
+    public ResponseEntity<RacaDTO> salvar(@Valid @RequestBody RacaRequest racaRequest) {
         Raca raca = racaConverter.to(racaRequest);
         raca = racaService.salvar(raca);
         ResourceUriUtil.addUriInResponseHeader(raca.getId());
@@ -43,7 +44,7 @@ public class RacaController {
     }
 
     @PutMapping("/{idRaca}")
-    public ResponseEntity<RacaDTO> atualizar(@PathVariable Integer idRaca, @RequestBody RacaRequest racaRequest) {
+    public ResponseEntity<RacaDTO> atualizar(@PathVariable Integer idRaca, @Valid @RequestBody RacaRequest racaRequest) {
         Raca racaAtual = racaService.buscar(idRaca);
         racaConverter.copyToProperties(racaRequest, racaAtual);
         racaAtual = racaService.salvar(racaAtual);

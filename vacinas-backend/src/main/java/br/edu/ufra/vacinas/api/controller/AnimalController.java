@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -36,7 +36,7 @@ public class AnimalController {
     }
 
     @PostMapping
-    public ResponseEntity<AnimalDTO> salvar(@RequestBody AnimalRequest animalRequest) {
+    public ResponseEntity<AnimalDTO> salvar(@Valid @RequestBody AnimalRequest animalRequest) {
         Animal animal = animalConverter.to(animalRequest);
         animal = animalService.salvar(animal);
         ResourceUriUtil.addUriInResponseHeader(animal.getId());
@@ -45,7 +45,7 @@ public class AnimalController {
 
 
     @PutMapping("/{idAnimal}")
-    public ResponseEntity<AnimalDTO> atualizar(@PathVariable Integer idAnimal, @RequestBody AnimalRequest animalRequest) {
+    public ResponseEntity<AnimalDTO> atualizar(@PathVariable Integer idAnimal, @Valid @RequestBody AnimalRequest animalRequest) {
         Animal animalAtual = animalService.buscar(idAnimal);
         animalConverter.copyToProperties(animalRequest, animalAtual);
         animalAtual = animalService.salvar(animalAtual);
