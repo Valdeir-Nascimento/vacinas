@@ -3,7 +3,6 @@ package br.edu.ufra.vacinas.api.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -13,17 +12,12 @@ import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Entity
 @Table(name = "vacina")
-public class Vacina implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Vacina extends BaseEntity implements Serializable {
 
-    @EqualsAndHashCode.Include
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private static final long serialVersionUID = 1L;
 
     private String nome;
 
@@ -35,5 +29,4 @@ public class Vacina implements Serializable {
     @ManyToOne(optional = false)
     private Animal animal;
 
-    
 }

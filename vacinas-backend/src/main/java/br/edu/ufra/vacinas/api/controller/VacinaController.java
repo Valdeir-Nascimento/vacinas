@@ -3,9 +3,12 @@ package br.edu.ufra.vacinas.api.controller;
 import br.edu.ufra.vacinas.api.dto.VacinaDTO;
 import br.edu.ufra.vacinas.api.dto.converter.VacinaConverter;
 import br.edu.ufra.vacinas.api.dto.request.VacinaRequest;
+import br.edu.ufra.vacinas.api.exception.AnimalNaoEncontradoException;
+import br.edu.ufra.vacinas.api.exception.EntidadeNaoEncontradaException;
+import br.edu.ufra.vacinas.api.model.Animal;
 import br.edu.ufra.vacinas.api.model.Vacina;
-import br.edu.ufra.vacinas.api.service.AnimalService;
-import br.edu.ufra.vacinas.api.service.VacinaService;
+import br.edu.ufra.vacinas.api.service.impl.AnimalServiceImpl;
+import br.edu.ufra.vacinas.api.service.impl.VacinaServiceImpl;
 import br.edu.ufra.vacinas.api.util.ResourceUriUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,15 +24,15 @@ import java.util.List;
 public class VacinaController {
 
     @Autowired
-    private VacinaService vacinaService;
+    private VacinaServiceImpl vacinaService;
     @Autowired
-    private AnimalService animalService;
+    private AnimalServiceImpl animalService;
     @Autowired
     private VacinaConverter vacinaConverter;
 
     @GetMapping
     public ResponseEntity<List<VacinaDTO>> listar(@PathVariable Integer idAnimal) {
-        List<Vacina> vacinas = vacinaService.obter(animalService.buscar(idAnimal));
+        List<Vacina> vacinas = vacinaService.obter(animalService.findById(idAnimal));
         return ResponseEntity.ok().body(vacinaConverter.to(vacinas));
     }
 
@@ -41,24 +44,29 @@ public class VacinaController {
 
     @PostMapping
     public ResponseEntity<VacinaDTO> salvar(@PathVariable Integer idAnimal, @Valid @RequestBody VacinaRequest vacinaRequest) {
-        Vacina vacina = vacinaConverter.to(vacinaRequest);
-        vacina = vacinaService.salvar(vacina);
-        ResourceUriUtil.addUriInResponseHeader(vacina.getId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(vacinaConverter.to(vacina));
+        Animal animal = animalService.findById(idAnimal);
+        try {
+            Vacina vacina = vacinaConverter.to(vacinaRequest);
+            vacina = vacinaService.save(vacina);
+            ResourceUriUtil.addUriInResponseHeader(vacina.getId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(vacinaConverter.to(vacina));
+        } catch (AnimalNaoEncontradoException e) {
+            throw new AnimalNaoEncontradoException(animal.getId());
+        }
     }
 
     @PutMapping("/{idVacina}")
     public ResponseEntity<VacinaDTO> atualizar(@PathVariable Integer idAnimal, @PathVariable Integer idVacina, @Valid @RequestBody VacinaRequest vacinaRequest) {
         Vacina vacinaAtual = vacinaService.buscar(idAnimal, idVacina);
         vacinaConverter.copyToProperties(vacinaRequest, vacinaAtual);
-        vacinaAtual = vacinaService.salvar(vacinaAtual);
+        vacinaAtual = vacinaService.save(vacinaAtual);
         return ResponseEntity.ok().body(vacinaConverter.to(vacinaAtual));
     }
 
     @DeleteMapping("/{idVacina}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void excluir(@PathVariable Integer idAnimal, @PathVariable Integer idVacina) {
-        vacinaService.excluir(idVacina);
+        vacinaService.delete(idVacina);
     }
 
 }

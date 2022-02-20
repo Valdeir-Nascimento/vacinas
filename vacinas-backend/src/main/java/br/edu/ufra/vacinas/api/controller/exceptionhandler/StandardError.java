@@ -1,4 +1,4 @@
-package br.edu.ufra.vacinas.api.exception.handler;
+package br.edu.ufra.vacinas.api.controller.exceptionhandler;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;

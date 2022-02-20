@@ -1,4 +1,4 @@
-package br.edu.ufra.vacinas.api.exception.handler;
+package br.edu.ufra.vacinas.api.controller.exceptionhandler;
 
 import br.edu.ufra.vacinas.api.exception.EntidadeNaoEncontradaException;
 import br.edu.ufra.vacinas.api.exception.NegocioException;

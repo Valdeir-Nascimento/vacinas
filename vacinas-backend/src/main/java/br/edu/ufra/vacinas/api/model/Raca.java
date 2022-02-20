@@ -13,23 +13,16 @@ import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Entity
 @Table(name = "raca")
-public class Raca implements Serializable {
+public class Raca extends BaseEntity implements Serializable {
     
 	private static final long serialVersionUID = 1L;
-
-    @EqualsAndHashCode.Include
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
 
     private String nome;
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "raca")
     private List<Animal> animalList;
 
-    
 }

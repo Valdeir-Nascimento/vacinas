@@ -14,17 +14,12 @@ import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Entity
 @Table(name = "animal")
-public class Animal implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Animal extends BaseEntity implements Serializable {
 
-    @EqualsAndHashCode.Include
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private static final long serialVersionUID = 1L;
 
     private String nome;
     private String dono;
@@ -33,7 +28,7 @@ public class Animal implements Serializable {
 
     @Temporal(TemporalType.DATE)
     private Date nascimento;
-    
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "animal")
     private List<Vacina> vacinaList;
 
@@ -41,6 +36,4 @@ public class Animal implements Serializable {
     @ManyToOne(optional = false)
     private Raca raca;
 
-
-    
 }

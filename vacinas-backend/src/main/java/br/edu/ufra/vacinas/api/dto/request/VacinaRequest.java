@@ -16,5 +16,5 @@ public class VacinaRequest {
     private String nome;
 
     @Valid
-    private AnimalRequest animal;
+    private AnimalIdRequest animal;
 }
