@@ -42,8 +42,7 @@ public class AnimalController {
         ResourceUriUtil.addUriInResponseHeader(animal.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(animalConverter.to(animal));
     }
-
-
+    
     @PutMapping("/{idAnimal}")
     public ResponseEntity<AnimalDTO> atualizar(@PathVariable Integer idAnimal, @Valid @RequestBody AnimalRequest animalRequest) {
         Animal animalAtual = animalService.findById(idAnimal);
